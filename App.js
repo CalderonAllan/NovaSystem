@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import Encabezado from "./src/componentes/Encabezado";
-import Detalle from "./src/pantallas/Detalle";
+import AgregarProducto from "./src/pantallas/AgregarProducto";
 
 export default function App() {
   return (
@@ -10,7 +10,7 @@ export default function App() {
       titulo="Si"
       mostrarFlecha={true}
       />
-      <Detalle/>
+      <AgregarProducto/>
       <Text>App.js</Text>
       <StatusBar style="auto" />
     </View>
@@ -25,3 +25,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
 });
+
+
+
+
+
