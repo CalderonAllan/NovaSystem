@@ -1,38 +1,62 @@
-import React, { useState } from 'react';
+import { useContext } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+import { FavoritosContext } from '../contexto/FavoritosContext';
+import Encabezado from '../componentes/Encabezado';
 
-export default function App() {
-  const [cantidadFavoritos, setCantidadFavoritos] = useState(2);
+export default function Detalle({ route, navigation }) {
+  const { producto } = route.params;
+  const { favoritos, alternarFavorito } = useContext(FavoritosContext);
+
+  const esFavorito = favoritos.includes(producto.id);
+
+  function manejarFavorito() {
+    alternarFavorito(producto.id);
+  }
+
+  function regresar() {
+    navigation.goBack();
+  }
 
   return (
     <View style={styles.webBackground}>
       <View style={styles.pageContainer}>
-
-
+        <Encabezado
+          titulo="Detalle"
+          mostrarFlecha={true}
+          alVolver={regresar}
+        />
 
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.imageCard}>
             <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80' }}
+              source={producto.imagen}
               style={styles.productImage}
               resizeMode="cover"
             />
           </View>
 
           <View style={styles.infoSection}>
-            <Text style={styles.title}>Auriculares Nova Bass</Text>
-            <Text style={styles.price}>$89.99</Text>
+            <Text style={styles.title}>{producto.nombre}</Text>
+            <Text style={styles.price}>${producto.precio}</Text>
 
             <Text style={styles.description}>
-              Disfruta de la mejor calidad de sonido.
+              {producto.descripcion}
             </Text>
 
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={() => setCantidadFavoritos(cantidadFavoritos + 1)}
+              onPress={manejarFavorito}
             >
-              <Text style={styles.actionButtonText}>Agregar a Favoritos</Text>
+              <AntDesign
+                name="heart"
+                size={20}
+                color={esFavorito ? '#e63946' : '#FFFFFF'}
+                style={styles.botonIcono}
+              />
+              <Text style={styles.actionButtonText}>
+                {esFavorito ? 'Quitar de Favoritos' : 'Agregar a Favoritos'}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -45,76 +69,18 @@ export default function App() {
 const styles = StyleSheet.create({
   webBackground: {
     flex: 1,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    minHeight: '100vh',
-    paddingVertical: 20,
-    alignSelf: "stretch",
+    alignSelf: 'stretch',
   },
   pageContainer: {
+    flex: 1,
     width: '100%',
     maxWidth: 480,
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
   },
-  // Estilos del encabezado
-  container: {
-    flexDirection: "row",
-    backgroundColor: "#133975",
-    width: "100%",
-    paddingTop: 40,
-    paddingBottom: 35,
-    paddingHorizontal: 25,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  contenedorIcono: {
-    width: 32,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  textoMenu: {
-    flex: 1,
-    textAlign: "center",
-    color: "#ffffff",
-    fontSize: 25,
-    fontWeight: "bold",
-    position: "relative"
-  },
-  iconosMenu: {
-    color: "#ffffff",
-    fontSize: 25,
-    fontWeight: "bold",
-    position: 'relative',
-  },
-  insignia: {
-    position: "absolute",
-    top: -6,
-    right: -4,
-    backgroundColor: "#e63946",
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 4,
-  },
-  textoInsignia: {
-    color: "#ffffff",
-    fontSize: 11,
-    fontWeight: "bold",
-  },
-  // Estilos del contenido inferior
   content: {
     padding: 24,
   },
@@ -156,9 +122,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#31A8C6',
     borderRadius: 30,
     height: 54,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    cursor: 'pointer',
+  },
+  botonIcono: {
+    marginRight: 10,
   },
   actionButtonText: {
     color: '#FFFFFF',

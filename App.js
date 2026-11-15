@@ -1,32 +1,27 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import Encabezado from "./src/componentes/Encabezado";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import { ProductosProvider } from "./src/contexto/ProductosContext";
+import { FavoritosProvider } from "./src/contexto/FavoritosContext";
+
+import Catalogo from "./src/pantallas/Catalogo";
+import Detalle from "./src/pantallas/Detalle";
 import AgregarProducto from "./src/pantallas/AgregarProducto";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Encabezado
-      titulo="Si"
-      mostrarFlecha={true}
-      />
-      <AgregarProducto/>
-      <Text>App.js</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ProductosProvider>
+      <FavoritosProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Catalogo" component={Catalogo} />
+            <Stack.Screen name="Detalle" component={Detalle} />
+            <Stack.Screen name="AgregarProducto" component={AgregarProducto} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </FavoritosProvider>
+    </ProductosProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-});
-
-
-
-
-

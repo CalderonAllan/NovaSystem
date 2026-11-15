@@ -1,31 +1,37 @@
+import { useContext } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
+import { FavoritosContext } from "../contexto/FavoritosContext";
 
-export default function Encabezado({ titulo, mostrarFlecha }) {
+export default function Encabezado({ titulo, mostrarFlecha, alVolver }) {
+  const { favoritos } = useContext(FavoritosContext);
+  const cantidadFavoritos = favoritos.length;
 
-  const cantidadFavoritos = 0; // pasar esto al contexto para que sea actualizado
+  function manejarFavoritosHeader() {
+    alert("Tienes " + cantidadFavoritos + " favoritos");
+  }
 
   return (
     <View style={styles.container}>
-        <View style={styles.contenedorIcono}>
-            {mostrarFlecha && (
-                <TouchableOpacity onPress={() => alert('Atrás')}>
-                    <AntDesign name="arrow-left" style={styles.iconosMenu} />
-                </TouchableOpacity>
-            )}
+      <View style={styles.contenedorIcono}>
+        {mostrarFlecha && (
+          <TouchableOpacity onPress={alVolver}>
+            <AntDesign name="arrow-left" style={styles.iconosMenu} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <Text style={styles.textoMenu}>{titulo}</Text>
+
+      <TouchableOpacity onPress={manejarFavoritosHeader}>
+        <AntDesign name="heart" style={styles.iconosMenu} />
+        <View style={styles.insignia}>
+          <Text style={styles.textoInsignia}>{cantidadFavoritos}</Text>
         </View>
+      </TouchableOpacity>
 
-        <Text style={styles.textoMenu}> {titulo}</Text>
-
-        <TouchableOpacity onPress={() => alert('Atrás')}>
-            <AntDesign name="heart" style={styles.iconosMenu} />
-            <View style={styles.insignia}>
-                <Text style={styles.textoInsignia}>{cantidadFavoritos}</Text>
-            </View>
-        </TouchableOpacity>
-
-        <StatusBar style="auto" />
+      <StatusBar style="auto" />
     </View>
   );
 }
@@ -55,13 +61,13 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 25,
     fontWeight: "bold",
-    position: "relative"
+    position: "relative",
   },
   iconosMenu: {
     color: "#ffffff",
     fontSize: 25,
     fontWeight: "bold",
-    position: 'relative',
+    position: "relative",
   },
   insignia: {
     position: "absolute",

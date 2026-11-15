@@ -1,14 +1,16 @@
-
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
-  View,Text,TextInput,TouchableOpacity,ScrollView,StyleSheet,Image,Alert,Platform,
+  View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, Platform,
 } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
 import Encabezado from "../componentes/Encabezado";
+import { ProductosContext } from "../contexto/ProductosContext";
 
-export default function AgregarProducto({ onGuardar }) {
+export default function AgregarProducto({ navigation, onGuardar }) {
+  const { agregarProducto } = useContext(ProductosContext);
+
   const [nombre, setNombre] = useState("");
   const [precio, setPrecio] = useState("");
   const [imagen, setImagen] = useState("");
@@ -21,8 +23,12 @@ export default function AgregarProducto({ onGuardar }) {
   // Indica si la imagen proviene de un enlace o archivo
   const [tipoImagen, setTipoImagen] = useState("url");
 
+  function regresar() {
+    navigation.goBack();
+  }
+
   // Seleccionar imagen desde el dispositivo
-  const seleccionarImagen = async () => {
+  async function seleccionarImagen() {
     try {
       const resultado = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
@@ -38,24 +44,24 @@ export default function AgregarProducto({ onGuardar }) {
     } catch (error) {
       setErrorImagen("No se pudo seleccionar la imagen.");
     }
-  };
+  }
 
   // Validar URL
-  const validarURL = (url) => {
+  function validarURL(url) {
     return /^https?:\/\/\S+$/i.test(url);
-  };
+  }
 
   // Mostrar mensaje de éxito
-  const mostrarMensaje = (mensaje) => {
+  function mostrarMensaje(mensaje) {
     if (Platform.OS === "web") {
       window.alert(mensaje);
     } else {
       Alert.alert("NovaSystem", mensaje);
     }
-  };
+  }
 
   // Limpiar formulario
-  const limpiarFormulario = () => {
+  function limpiarFormulario() {
     setNombre("");
     setPrecio("");
     setImagen("");
@@ -64,10 +70,10 @@ export default function AgregarProducto({ onGuardar }) {
     setErrorPrecio("");
     setErrorGeneral("");
     setErrorImagen("");
-  };
+  }
 
   // Guardar producto
-  const guardarProducto = () => {
+  function guardarProducto() {
     setErrorPrecio("");
     setErrorGeneral("");
     setErrorImagen("");
@@ -107,27 +113,56 @@ export default function AgregarProducto({ onGuardar }) {
       id: Date.now().toString(),
       nombre: nombre.trim(),
       precio: precioNumero,
-      imagen: imagen.trim(),
+      imagen: { uri: imagen.trim() },
       descripcion: descripcion.trim(),
     };
 
     if (onGuardar) {
       onGuardar(nuevoProducto);
       limpiarFormulario();
+    } else if (agregarProducto) {
+      agregarProducto(nuevoProducto);
+      limpiarFormulario();
+      mostrarMensaje("Producto agregado correctamente.");
+      navigation.goBack();
     } else {
       mostrarMensaje(
         "Producto validado correctamente. Pendiente de conectar con el catálogo."
       );
-      // No limpiar: todavía no se ha guardado.
     }
-  };
+  }
+
+  function cambiarPrecio(texto) {
+    setPrecio(texto);
+    setErrorPrecio("");
+  }
+
+  function cambiarImagenURL(texto) {
+    setImagen(texto);
+    setTipoImagen("url");
+    setErrorImagen("");
+  }
+
+  function errorAlCargarImagen() {
+    setErrorImagen("No se pudo cargar la imagen seleccionada.");
+  }
+
+  function limpiarErrorImagen() {
+    setErrorImagen("");
+  }
+
+  function quitarImagen() {
+    setImagen("");
+    setTipoImagen("url");
+    setErrorImagen("");
+  }
 
   return (
     <View style={styles.contenedor}>
-      {/* Encabezado compartido del proyecto */}
       <Encabezado
         titulo="Nuevo Producto"
         mostrarFlecha={true}
+        alVolver={regresar}
       />
 
       <ScrollView
@@ -168,10 +203,7 @@ export default function AgregarProducto({ onGuardar }) {
             placeholderTextColor="#92959D"
             keyboardType="decimal-pad"
             value={precio}
-            onChangeText={(texto) => {
-              setPrecio(texto);
-              setErrorPrecio("");
-            }}
+            onChangeText={cambiarPrecio}
           />
 
           {errorPrecio ? (
@@ -196,11 +228,7 @@ export default function AgregarProducto({ onGuardar }) {
             autoCapitalize="none"
             keyboardType="url"
             value={tipoImagen === "url" ? imagen : ""}
-            onChangeText={(texto) => {
-              setImagen(texto);
-              setTipoImagen("url");
-              setErrorImagen("");
-            }}
+            onChangeText={cambiarImagenURL}
           />
 
           <Text style={styles.textoSeparador}>
@@ -241,21 +269,13 @@ export default function AgregarProducto({ onGuardar }) {
                   source={{ uri: imagen.trim() }}
                   style={styles.imagenPrevia}
                   resizeMode="contain"
-                  onError={() => {
-                    setErrorImagen(
-                      "No se pudo cargar la imagen seleccionada."
-                    );
-                  }}
-                  onLoad={() => setErrorImagen("")}
+                  onError={errorAlCargarImagen}
+                  onLoad={limpiarErrorImagen}
                 />
 
                 <TouchableOpacity
                   style={styles.botonEliminarImagen}
-                  onPress={() => {
-                    setImagen("");
-                    setTipoImagen("url");
-                    setErrorImagen("");
-                  }}
+                  onPress={quitarImagen}
                 >
                   <AntDesign
                     name="close-circle"
@@ -468,9 +488,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
-
-
-
-
