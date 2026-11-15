@@ -16,7 +16,7 @@ export default function App() {
             <Image
               source={{ uri: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80' }}
               style={styles.productImage}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           </View>
 
@@ -122,13 +122,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#EDF2F7',
     borderRadius: 16,
     height: 300,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
   },
   productImage: {
-    width: '80%',
-    height: '80%',
+    width: '100%',
+    height: '100%',
   },
   infoSection: {
     flex: 1,
