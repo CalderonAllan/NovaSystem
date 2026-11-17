@@ -174,9 +174,7 @@ export default function AgregarProducto({ navigation, onGuardar }) {
           Nuevo Producto
         </Text>
 
-        <View style={styles.formulario}>
-
-          {/* NOMBRE */}
+      <View style={styles.formulario}>
           <Text style={styles.etiqueta}>
             Nombre del producto
           </Text>
